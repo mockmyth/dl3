@@ -1,0 +1,59 @@
+import numpy as np 
+import pandas as pd 
+import matplotlib.pyplot as plt 
+import tensorflow 
+from tensorflow import keras 
+from tensorflow.keras import datasets 
+from tensorflow.keras import models, layers 
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense, Flatten, Conv2D, 
+MaxPooling2D, Dropout 
+# Read the CSV file (assuming the CSV contains image data and labels) 
+# For this example, we'll assume the images are flattened into rows and 
+the last column contains the labels 
+data = pd.read_csv('path_to_your_file.csv') 
+# Assuming the CSV file has columns for image data and a 'label' 
+column for the category 
+X = data.iloc[:, :-1].values  # All columns except the last one for the 
+features (image data) 
+y = data.iloc[:, -1].values   # Last column for the labels 
+# Reshape X to be 28x28 for each image and normalize to range [0, 1] 
+X = X.reshape(-1, 28, 28, 1).astype('float32') / 255.0 
+from sklearn.model_selection import train_test_split 
+# Split the data into training and test sets (80% train, 20% test) 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, 
+random_state=42) 
+# Build the model 
+model = Sequential() 
+model.add(Conv2D(filters=64, kernel_size=(3, 3), activation='relu', 
+input_shape=(28, 28, 1))) 
+model.add(MaxPooling2D(pool_size=(2, 2))) 
+model.add(Flatten()) 
+model.add(Dense(128, activation="relu")) 
+model.add(Dense(10, activation="softmax")) 
+# Compile the model 
+model.compile(loss='sparse_categorical_crossentropy', 
+optimizer='adam', metrics=['accuracy']) 
+# Train the model 
+model.fit(X_train, y_train, epochs=5) 
+# Evaluate the model on the test set 
+evaluation = model.evaluate(X_test, y_test) 
+print(f"Test loss: {evaluation[0]}") 
+print(f"Test accuracy: {evaluation[1]}") 
+# Label for the classes 
+labels = ['t_shirt', 'trouser', 'pullover', 'dress', 'coat', 'sandal', 'shirt', 
+'sneaker', 'bag', 'ankle_boots'] 
+# Make a prediction for a specific test image (11th image in the test set) 
+predictions = model.predict(X_test[11:12]) 
+label = labels[np.argmax(predictions)] 
+# Print predicted label 
+print(f"Predicted label: {label}") 
+# Display the 11th image in the test set 
+plt.imshow(X_test[11:12][0]) 
+plt.show() 
+ 
+ 
+ 
+ 
+ 
+ 
